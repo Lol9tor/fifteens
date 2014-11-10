@@ -1,30 +1,74 @@
+(function() {
+    window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+})();
+
+function randomizeNumbers(a, b){
+    return 1 - (Math.random()*2)
+}
+
 function Field() {
     this.width = 4;
     this.height = 4;
     this.arrNumbers = [];
-}
-
-function Fifteens(){
-    this.field = new Field();
-    this.animator = new Animator();
     this.createField();
 }
 
-Fifteens.prototype.createField = function () {
-    var k = 0;
-    for (var i = 0; i < this.field.width; i++){
-        this.field.arrNumbers[i] = [];
-        for (var j = 0; j < this.field.height; j++){
-           if (i==this.field.width-1 && j==this.field.arrNumbers.height-1){
-                this.field.arrNumbers[i][j] = 0;
-                break;
-            }
-            this.field.arrNumbers[i][j] = k;
+Field.prototype.createField = function () {
+    for (var i = 0; i < this.width*this.height; i++){
+        this.arrNumbers[i] = i;
+    }
+    this.arrNumbers.sort(randomizeNumbers);
+    this.checkSolveField();
+};
+
+Field.prototype.checkSolveField = function () {
+
+};
+
+function Fifteens(){
+    this.field = new Field();
+    this.animator = new Animator(this.field.arrNumbers);
+    this.animator.drawField();
+}
+
+Fifteens.prototype.checkStateField = function (x, y) {
+    var x0 = 0,
+        y0 = 0,
+        numbers = this.field.arrNumbers;
+    for (var i = 0; i < numbers.length; i++){
+        if (numbers[i] === 0){
+            x0 = i%this.field.width;
+            y0 = Math.floor(i/this.field.width);
+            break;
+        }
+    }
+    // condition click near emptyCell
+    var clickNear0 = (Math.abs(x-x0) + Math.abs(y-y0)) == 1;
+    if (clickNear0){
+        var emptyElemIndex = x0+y0*this.field.width;
+        var currElemIndex = x+y*this.field.width;
+        numbers[emptyElemIndex] = numbers[currElemIndex];
+        numbers[currElemIndex] = 0;
+       this.animator.moveChip(emptyElemIndex, currElemIndex);
+    }
+
+};
+
+Fifteens.prototype.checkVictory = function () {
+    var victory = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
+    var result = false,
+        arrNumbers = this.field.arrNumbers,
+        k = 0;
+    for (var i = 0; i < arrNumbers.length; i++){
+        if (arrNumbers[i] == victory[i]){
             k++;
         }
     }
-    this.animator.drawAll(this.field.arrNumbers);
+    if (k == 16){
+        result = true;
+    }
+    return result;
 };
-
 
 
