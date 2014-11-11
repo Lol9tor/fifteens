@@ -18,9 +18,10 @@ Field.prototype.createField = function () {
     for (var i = 0; i < this.width*this.height; i++){
         this.arrNumbers[i] = i;
     }
+
     this.arrNumbers.sort(randomizeNumbers);
     var checkSolveField = this.checkSolveField();
-    while (checkSolveField){
+    while (!checkSolveField){
         this.arrNumbers.sort(randomizeNumbers);
         checkSolveField = this.checkSolveField();
     }
@@ -32,15 +33,14 @@ Field.prototype.checkSolveField = function () {
         isOdd;
     for (var i = 0; i < this.arrNumbers.length; i++){
         if (this.arrNumbers[i] == 0){
-            var e = Math.floor(i/4);// row with 0
+            var e = Math.ceil(i/4);// row with 0
             continue;
         }
         k = (this.arrNumbers[i] - (i+1));
         sum += k;
     }
     isOdd = !!((sum+e)%2);
-    console.log(isOdd);
-    return isOdd;
+    return !isOdd;
 };
 
 function Fifteens(){

@@ -15,16 +15,18 @@ function fillRoundedRect(x, y, w, h, r){
 CanvasRenderingContext2D.prototype.fillRoundedRect = fillRoundedRect;
 
 function Animator(numbers) {
-    this.cellSize = 100;
+    var minSize = Math.min(window.innerWidth, window.innerHeight);
     this.canvas = document.getElementById('canvas');
     this.ctx = canvas.getContext('2d');
-    this.canvas.width = 400;
-    this.canvas.height = 400;
+    this.canvas.width = minSize;
+    this.canvas.height = minSize;
+    this.cellSize = minSize/4;
     this.duration = 400;
     this.isMoving = false;
     //this.canvas.style.border = '1px solid';
-    this.ctx.font = '20px Georgia';
-    this.offset = {x : 20, y : 20};
+    var font = this.cellSize/5;
+    this.ctx.font = font+'px Georgia';
+    this.offset = {x : 0, y : 0};
     this.init(numbers);
 }
 
@@ -73,20 +75,27 @@ Animator.prototype.moveChip = function (emptyIndex, currentIndex) {
         time = 0,
         dTime = 0;
         cb = function () {
-            var k = time/self.duration,
-                currX = tmpX + dx*k,
-                currY = tmpY + dy* k;
+            var k = function (t, b, c, d) {
+                    t /= d/2;
+                    if (t < 1) {
+                        return c/2*t*t*t + b;
+                    }
+                    t -= 2;
+                    return c/2*(t*t*t + 2) + b;
+            },
+                currX = k(time, tmpX ,dx ,self.duration),
+                currY = k(time, tmpY ,dy ,self.duration);
             dTime = Date.now() - self.lastFrame;
             time += dTime;
             currentChip.x = currX;
             currentChip.y = currY;
             self.lastFrame = Date.now();
             if (time > self.duration) {
-                self.chips[currentIndex].x = emptyChip.x;
-                self.chips[currentIndex].y = emptyChip.y;
+                currentChip.x = emptyChip.x;
+                currentChip.y = emptyChip.y;
                 self.chips[currentIndex] = emptyChip;
-                self.chips[emptyIndex].x = tmpX;
-                self.chips[emptyIndex].y = tmpY;
+                emptyChip.x = tmpX;
+                emptyChip.y = tmpY;
                 self.chips[emptyIndex] = t;
                 self.drawField();
                 self.isMoving = false;

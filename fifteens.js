@@ -1,6 +1,7 @@
-var fifteens = new Fifteens();
-var cnv = fifteens.animator.canvas,
+var fifteens = new Fifteens(),
+    cnv = fifteens.animator.canvas,
     cellSize = fifteens.animator.cellSize;
+
 cnv.onclick = function(e) {
     if (fifteens.animator.isMoving){
         return;
