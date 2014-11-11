@@ -2,13 +2,22 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fifteens</title>
     <script src="main.js" type="text/javascript"></script>
     <script src="view.js" type="text/javascript"></script>
 </head>
 <body>
     <div id="container">
-        <div id="gameField" align="center">
+        <p id="radio" align="center">
+            <input id='radioCanvas' type='radio' name="choice" value="canvas" checked/><label for="radioCanvas">Draw on canvas</label>
+            <input id='radioHtml' type='radio' name="choice" value="html"/><label for="radioHtml">Draw on HTML</label><br>
+            <button id="button">Redraw</button><br>
+        </p>
+        <div id="gameHtml">
+
+        </div>
+        <div id="gameCanvas" align="center">
             <canvas id="canvas"></canvas>
         </div>
     </div>

@@ -114,4 +114,10 @@ function Chip(x, y, value){
     this.value = value;
 }
 
-
+function HtmlAnimator(){
+    var minSize = Math.min(window.innerWidth, window.innerHeight);
+    this.elem = document.getElementById('gameHtml');
+    this.elem.style.width = minSize;
+    this.elem.style.height = minSize;
+    this.cellSize = minSize/4;
+}
