@@ -19,11 +19,28 @@ Field.prototype.createField = function () {
         this.arrNumbers[i] = i;
     }
     this.arrNumbers.sort(randomizeNumbers);
-    this.checkSolveField();
+    var checkSolveField = this.checkSolveField();
+    while (checkSolveField){
+        this.arrNumbers.sort(randomizeNumbers);
+        checkSolveField = this.checkSolveField();
+    }
 };
 
 Field.prototype.checkSolveField = function () {
-
+    var sum = 0,
+        k = 0,
+        isOdd;
+    for (var i = 0; i < this.arrNumbers.length; i++){
+        if (this.arrNumbers[i] == 0){
+            var e = Math.floor(i/4);// row with 0
+            continue;
+        }
+        k = (this.arrNumbers[i] - (i+1));
+        sum += k;
+    }
+    isOdd = !!((sum+e)%2);
+    console.log(isOdd);
+    return isOdd;
 };
 
 function Fifteens(){
@@ -52,7 +69,10 @@ Fifteens.prototype.checkStateField = function (x, y) {
         numbers[currElemIndex] = 0;
        this.animator.moveChip(emptyElemIndex, currElemIndex);
     }
-
+    var checkVictory = this.checkVictory();
+    if (checkVictory){
+        console.log('YOU WIN! GOOD JOB!');
+    }
 };
 
 Fifteens.prototype.checkVictory = function () {
