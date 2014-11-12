@@ -15,9 +15,10 @@ function fillRoundedRect(x, y, w, h, r){
 CanvasRenderingContext2D.prototype.fillRoundedRect = fillRoundedRect;
 
 function Animator(numbers) {
-    var minSize = Math.min(window.innerWidth, window.innerHeight);
-    this.canvas = document.getElementById('canvas');
-    this.ctx = canvas.getContext('2d');
+    var minSize = 0.9*Math.min(window.innerWidth, window.innerHeight);
+    this.elem = document.getElementById('gameField');
+    this.canvas = document.createElement('canvas');
+    this.ctx = this.canvas.getContext('2d');
     this.canvas.width = minSize;
     this.canvas.height = minSize;
     this.cellSize = minSize/4;
@@ -27,7 +28,8 @@ function Animator(numbers) {
     var font = this.cellSize/5;
     this.ctx.font = font+'px Georgia';
     this.offset = {x : 0, y : 0};
-    this.init(numbers);
+    this.initCanvas(numbers);
+    this.elem.appendChild(this.canvas);
 }
 
 Animator.prototype.drawField = function () {
@@ -50,7 +52,7 @@ Animator.prototype.drawChip = function (chip) {
     this.ctx.fillRoundedRect(chip.x, chip.y, 0.8*this.cellSize, 0.8*this.cellSize, 0.2*this.cellSize)
 };
 
-Animator.prototype.init = function (arrNumbers) {
+Animator.prototype.initCanvas = function (arrNumbers) {
     this.chips = [];
     for (var i = 0; i < arrNumbers.length; i++){
         var x = (i%4)*this.cellSize,
@@ -59,6 +61,10 @@ Animator.prototype.init = function (arrNumbers) {
         var chip = new Chip(x, y, value);
         this.chips.push(chip);
     }
+};
+
+Animator.prototype.eventClick = function (e) {
+
 };
 
 Animator.prototype.moveChip = function (emptyIndex, currentIndex) {
@@ -114,10 +120,60 @@ function Chip(x, y, value){
     this.value = value;
 }
 
-function HtmlAnimator(){
-    var minSize = Math.min(window.innerWidth, window.innerHeight);
-    this.elem = document.getElementById('gameHtml');
-    this.elem.style.width = minSize;
-    this.elem.style.height = minSize;
+/////////////////////////////////////
+
+function HtmlAnimator(numbers){
+    var minSize = 0.9*Math.min(window.innerWidth, window.innerHeight);
+    this.elem = document.getElementById('gameField');
+    console.log();
+    this.elem.style.marginTop = '20px';
+    this.elem.style.width = minSize+'px';
+    this.elem.style.height = minSize+'px';
     this.cellSize = minSize/4;
+    this.chips  = [];
+    this.numbers = numbers;
+    //this.drawField(numbers);
 }
+
+HtmlAnimator.prototype.clearField = function () {
+    var children = this.elem.childNodes;
+    while(children.length) {
+        this.elem.removeChild(children[0])
+    }
+};
+
+HtmlAnimator.prototype.drawField = function () {
+    this.clearField();
+    var numbers = this.numbers;
+    for (var i = 0; i < numbers.length; i++){
+        var div = document.createElement('div');
+        div.textContent = numbers[i];
+        div.style.width = 0.8*this.cellSize + 'px';
+        div.style.height = 0.8*this.cellSize + 'px';
+        div.style.font = 'bold '+this.cellSize/5 + 'px/'+this.cellSize+'px Georgia';
+        div.style.margin = 0.05*this.cellSize + 'px';
+        var x = (i%4)*this.cellSize,
+            y = Math.floor(i/4)*this.cellSize;
+        div.style.webkitTransform = 'translate3d('+x+'px,'+ y +'px, 0)';
+        if (numbers[i] == 0){
+            div.style.opacity = 0;
+        }
+        div.className = 'cell';
+        this.elem.appendChild(div);
+        this.chips.push(div);
+    }
+};
+
+HtmlAnimator.prototype.moveChip = function (emptyIndex, currentIndex) {
+    var emptyChip = this.chips[emptyIndex];
+    var currentChip = this.chips[currentIndex];
+    //this.chips[currentIndex] = emptyChip;
+    var self = this;
+    self.chips[currentIndex] = emptyChip;
+    self.chips[currentIndex].style.webkitTransformOrigin = '100px 100px 0';
+    self.drawField();
+    this.chips[currentIndex].addEventListener('webkitTransitionEnd', function () {
+        self.chips[emptyIndex] = currentChip;
+    }, false);
+    console.log(this.chips[emptyIndex], this.chips[currentIndex]);
+};

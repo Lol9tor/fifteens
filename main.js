@@ -28,26 +28,64 @@ Field.prototype.createField = function () {
 };
 
 Field.prototype.checkSolveField = function () {
-    var sum = 0,
-        k = 0,
+    var k = 0,
         isOdd;
-    for (var i = 0; i < this.arrNumbers.length; i++){
-        if (this.arrNumbers[i] == 0){
-            var e = Math.ceil(i/4);// row with 0
-            continue;
+    for (var i = 1; i < this.arrNumbers.length; i++){
+        for (var j = i-1; j>=0; j--) {
+            if (this.arrNumbers[j] > this.arrNumbers[i]) {
+                k++;
+            }
         }
-        k = (this.arrNumbers[i] - (i+1));
-        sum += k;
     }
-    isOdd = !!((sum+e)%2);
-    return !isOdd;
+    i = 0;
+    for (i = 0; i < this.arrNumbers.length; i++) {
+        if (this.arrNumbers[i] == 0) {
+            var e = Math.ceil(i / 4);// row with 0
+        }
+    }
+    isOdd = !!((k+e)%2);
+    return isOdd;
 };
 
 function Fifteens(){
     this.field = new Field();
-    this.animator = new Animator(this.field.arrNumbers);
+    this.elem = document.createElement('div');
+    this.elem.setAttribute('id', 'gameField');
+    this.htmlAnimator = new HtmlAnimator(this.field.arrNumbers);
+    this.canvasAnimator = new Animator(this.field.arrNumbers);
+    this.animator = checkRadio()=='canvas' ? this.canvasAnimator : this.htmlAnimator;
+    this.chooseDrawer();
     this.animator.drawField();
 }
+
+Fifteens.prototype.chooseDrawer = function (){
+    var self = this;
+    if (this.checkRadio() == 'canvas') {
+        gameHtml.classList.add('notSelected');
+        gameCanvas.classList.remove('notSelected');
+        this.elem.addEventListener('click', function (e) {
+            if (self.isMoving) {
+                return;
+            }
+            var x = Math.floor((e.pageX - self.canvas.offsetLeft) / self.cellSize);
+            var y = Math.floor((e.pageY - self.canvas.offsetTop) / self.cellSize);
+            self.checkStateField(x, y);
+        });
+    } else {
+        gameCanvas.classList.add('notSelected');
+        gameHtml.classList.remove('notSelected');
+
+    }
+};
+
+Fifteens.prototype.checkRadio = function () {
+    var inp = document.getElementsByName('choice');
+    for (var i = 0; i < inp.length; i++) {
+        if (inp[i].type == "radio" && inp[i].checked) {
+            return inp[i].value;
+        }
+    }
+};
 
 Fifteens.prototype.checkStateField = function (x, y) {
     var x0 = 0,
@@ -67,7 +105,7 @@ Fifteens.prototype.checkStateField = function (x, y) {
         var currElemIndex = x+y*this.field.width;
         numbers[emptyElemIndex] = numbers[currElemIndex];
         numbers[currElemIndex] = 0;
-       this.animator.moveChip(emptyElemIndex, currElemIndex);
+        this.animator.moveChip(emptyElemIndex, currElemIndex);
     }
     var checkVictory = this.checkVictory();
     if (checkVictory){
