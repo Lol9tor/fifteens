@@ -18,7 +18,6 @@ Field.prototype.createField = function () {
     for (var i = 0; i < this.width*this.height; i++){
         this.arrNumbers[i] = i;
     }
-
     this.arrNumbers.sort(randomizeNumbers);
     var checkSolveField = this.checkSolveField();
     while (!checkSolveField){
@@ -53,29 +52,36 @@ function Fifteens(){
     this.elem.setAttribute('id', 'gameField');
     this.htmlAnimator = new HtmlAnimator(this.field.arrNumbers);
     this.canvasAnimator = new Animator(this.field.arrNumbers);
-    this.animator = checkRadio()=='canvas' ? this.canvasAnimator : this.htmlAnimator;
+    this.animator = this.checkRadio()=='canvas' ? this.canvasAnimator : this.htmlAnimator;
+    this.elem.appendChild(this.animator.elem);
     this.chooseDrawer();
     this.animator.drawField();
+    this.eventClick();
 }
 
 Fifteens.prototype.chooseDrawer = function (){
     var self = this;
-    if (this.checkRadio() == 'canvas') {
-        gameHtml.classList.add('notSelected');
-        gameCanvas.classList.remove('notSelected');
-        this.elem.addEventListener('click', function (e) {
-            if (self.isMoving) {
-                return;
-            }
-            var x = Math.floor((e.pageX - self.canvas.offsetLeft) / self.cellSize);
-            var y = Math.floor((e.pageY - self.canvas.offsetTop) / self.cellSize);
-            self.checkStateField(x, y);
-        });
-    } else {
-        gameCanvas.classList.add('notSelected');
-        gameHtml.classList.remove('notSelected');
+    this.button = document.getElementById('button');
+    this.button.addEventListener('click', function () {
+        self.htmlAnimator = new HtmlAnimator(self.field.arrNumbers);
+        self.canvasAnimator = new Animator(self.field.arrNumbers);
+        self.elem.removeChild(self.elem.childNodes[0]);
+        self.animator = self.checkRadio()=='canvas' ? self.canvasAnimator : self.htmlAnimator;
+        self.animator.drawField();
+        self.elem.appendChild(self.animator.elem);
+    });
+};
 
-    }
+Fifteens.prototype.eventClick = function () {
+    var self = this;
+    this.elem.addEventListener('click', function (e) {
+        if (self.isMoving) {
+            return;
+        }
+        var x = Math.floor((e.pageX - self.animator.elem.offsetLeft) / self.animator.cellSize);
+        var y = Math.floor((e.pageY - self.animator.elem.offsetTop) / self.animator.cellSize);
+        self.checkStateField(x, y);
+    });
 };
 
 Fifteens.prototype.checkRadio = function () {

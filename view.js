@@ -16,8 +16,9 @@ CanvasRenderingContext2D.prototype.fillRoundedRect = fillRoundedRect;
 
 function Animator(numbers) {
     var minSize = 0.9*Math.min(window.innerWidth, window.innerHeight);
-    this.elem = document.getElementById('gameField');
     this.canvas = document.createElement('canvas');
+    this.canvas.setAttribute('id', 'canvasField');
+    this.elem = this.canvas;
     this.ctx = this.canvas.getContext('2d');
     this.canvas.width = minSize;
     this.canvas.height = minSize;
@@ -29,7 +30,6 @@ function Animator(numbers) {
     this.ctx.font = font+'px Georgia';
     this.offset = {x : 0, y : 0};
     this.initCanvas(numbers);
-    this.elem.appendChild(this.canvas);
 }
 
 Animator.prototype.drawField = function () {
@@ -61,10 +61,6 @@ Animator.prototype.initCanvas = function (arrNumbers) {
         var chip = new Chip(x, y, value);
         this.chips.push(chip);
     }
-};
-
-Animator.prototype.eventClick = function (e) {
-
 };
 
 Animator.prototype.moveChip = function (emptyIndex, currentIndex) {
@@ -124,15 +120,14 @@ function Chip(x, y, value){
 
 function HtmlAnimator(numbers){
     var minSize = 0.9*Math.min(window.innerWidth, window.innerHeight);
-    this.elem = document.getElementById('gameField');
-    console.log();
+    this.elem = document.createElement('div');
+    this.elem.setAttribute('id', 'htmlField');
     this.elem.style.marginTop = '20px';
     this.elem.style.width = minSize+'px';
     this.elem.style.height = minSize+'px';
     this.cellSize = minSize/4;
     this.chips  = [];
     this.numbers = numbers;
-    //this.drawField(numbers);
 }
 
 HtmlAnimator.prototype.clearField = function () {
@@ -167,13 +162,14 @@ HtmlAnimator.prototype.drawField = function () {
 HtmlAnimator.prototype.moveChip = function (emptyIndex, currentIndex) {
     var emptyChip = this.chips[emptyIndex];
     var currentChip = this.chips[currentIndex];
+    var x = (emptyIndex%4)*this.cellSize,
+        y = Math.floor(emptyIndex/4)*this.cellSize;
     //this.chips[currentIndex] = emptyChip;
     var self = this;
     self.chips[currentIndex] = emptyChip;
-    self.chips[currentIndex].style.webkitTransformOrigin = '100px 100px 0';
+    self.chips[currentIndex].style.webkitTransform = 'translate3d('+x+'px,'+ y +'px, 0)';
     self.drawField();
     this.chips[currentIndex].addEventListener('webkitTransitionEnd', function () {
         self.chips[emptyIndex] = currentChip;
     }, false);
-    console.log(this.chips[emptyIndex], this.chips[currentIndex]);
 };

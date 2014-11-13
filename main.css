@@ -1,4 +1,4 @@
-#canvas {
+#gameField {
     -webkit-user-select: none;  /* Chrome all / Safari all */
     -moz-user-select: none;     /* Firefox all */
     -ms-user-select: none;      /* IE 10+ */
@@ -17,6 +17,7 @@
     text-align: center;
     border-radius: 20px;
     background-color: lightgray;
+    -webkit-transition: all 300ms ease-in-out;
     transition: all 300ms ease-in-out;
 }
 
