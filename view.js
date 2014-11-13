@@ -23,7 +23,7 @@ function Animator(numbers) {
     this.canvas.width = minSize;
     this.canvas.height = minSize;
     this.cellSize = minSize/4;
-    this.duration = 400;
+    this.duration = 300;
     this.isMoving = false;
     //this.canvas.style.border = '1px solid';
     var font = this.cellSize/5;
@@ -127,6 +127,7 @@ function HtmlAnimator(numbers){
     this.elem.style.height = minSize+'px';
     this.cellSize = minSize/4;
     this.chips  = [];
+    this.isMoving = false;
     this.numbers = numbers;
 }
 
@@ -160,16 +161,23 @@ HtmlAnimator.prototype.drawField = function () {
 };
 
 HtmlAnimator.prototype.moveChip = function (emptyIndex, currentIndex) {
+    this.isMoving = true;
     var emptyChip = this.chips[emptyIndex];
     var currentChip = this.chips[currentIndex];
     var x = (emptyIndex%4)*this.cellSize,
-        y = Math.floor(emptyIndex/4)*this.cellSize;
-    //this.chips[currentIndex] = emptyChip;
+        y = Math.floor(emptyIndex/4)*this.cellSize,
+        x0 = (currentIndex%4)*this.cellSize,
+        y0 = Math.floor(currentIndex/4)*this.cellSize;
     var self = this;
-    self.chips[currentIndex] = emptyChip;
+    this.isMoving = true;
     self.chips[currentIndex].style.webkitTransform = 'translate3d('+x+'px,'+ y +'px, 0)';
-    self.drawField();
-    this.chips[currentIndex].addEventListener('webkitTransitionEnd', function () {
-        self.chips[emptyIndex] = currentChip;
-    }, false);
+    self.chips[emptyIndex].style.webkitTransform = 'translate3d('+x0+'px,'+ y0 +'px, 0)';
+    this.elem.addEventListener('transitionend', this.endTransition(emptyIndex,currentIndex,emptyChip), false);
+};
+
+HtmlAnimator.prototype.endTransition = function (emptyIndex, currentIndex, emptyChip) {
+    this.chips[emptyIndex] = this.chips[currentIndex];
+    this.chips[currentIndex] = emptyChip;
+    this.isMoving = false;
+    this.elem.removeEventListener('transitionend', this.endTransition, false);
 };

@@ -75,7 +75,7 @@ Fifteens.prototype.chooseDrawer = function (){
 Fifteens.prototype.eventClick = function () {
     var self = this;
     this.elem.addEventListener('click', function (e) {
-        if (self.isMoving) {
+        if (self.animator.isMoving) {
             return;
         }
         var x = Math.floor((e.pageX - self.animator.elem.offsetLeft) / self.animator.cellSize);
@@ -104,7 +104,7 @@ Fifteens.prototype.checkStateField = function (x, y) {
             break;
         }
     }
-    // condition click near emptyCell
+    //condition click near emptyCell
     var clickNear0 = (Math.abs(x-x0) + Math.abs(y-y0)) == 1;
     if (clickNear0){
         var emptyElemIndex = x0+y0*this.field.width;
@@ -134,5 +134,3 @@ Fifteens.prototype.checkVictory = function () {
     }
     return result;
 };
-
-
